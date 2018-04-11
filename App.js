@@ -2,6 +2,7 @@
  * Sample React Native App
  * https://github.com/facebook/react-native
  * @flow
+ * https://codesandbox.io/s/p7opp0q8m
  */
 
 //maps api key : AIzaSyDVJBHoDxp9LMizxRD_x_wl3nQkXREC2r4
