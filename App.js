@@ -5,50 +5,87 @@
  * https://codesandbox.io/s/p7opp0q8m
  */
 
-//maps api key : AIzaSyDVJBHoDxp9LMizxRD_x_wl3nQkXREC2r4
-
 import React, { Component } from 'react';
+
+
 import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  FlatList,
+  ActivityIndicator,
+    List
 } from 'react-native';
-import SearchBar from "./components/search_bar";
-import Restaurant from "./components/restaurant_search";
 
-//import {SideMenu, List, ListItem} from 'react-native-elements';
+import SearchBar from './components/search_bar';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+const API_KEY = '89272d1f40c917674515b3364c6f2f96';
+const URL = 'https://developers.zomato.com/api/v2.1/search?q=Taco%20Bell&count=3&lat=37.3641651&lon=-120.42546149999998';
 
-type Props = {};
-export default class App extends Component<Props> {
+export default class App extends Component{
+
+  constructor(props){
+    super(props);
+
+    this.state = {
+        isLoading: true,
+        Restaurants : [],
+        selectedRestaurant: null
+    };
+
+    this.getListRestaurants();
+  }
+
+  getListRestaurants(){
+    return fetch(URL ,{
+        method:'GET',
+        headers:{
+          Accept: 'application/json',
+          'user-key' : API_KEY,
+        }
+      }).then((response) => response.json())
+        .then((result) => {
+
+        this.setState({
+          isLoading: false,
+          Restaurants : result.restaurants,
+          selectedRestaurant : 1
+        });
+
+        console.log(result);
+    }).catch((err) =>{
+      console.error(err);
+        });
+  }
+
   render() {
 
-    return (
+      if(this.state.isLoading){
+          return(
+              <View style={{flex: 1, padding: 20}}>
+                  <ActivityIndicator/>
+              </View>
+          )
+      }
 
+      // renderItem={({item}) => <Text>{item.name}</Text>}
+      //                     keyExtractor={(item, index) => index}
+
+      return(
         <View>
-            <SearchBar/>
-            <Restaurant/>
+            <SearchBar />
+            <View style={{flex: 1, paddingTop:20, justifyContent:'center'}}>
+                <FlatList
+                    data={this.state.Restaurants}
+                    renderItem={({item}) => <Text>{item.restaurant.name}</Text>}
+                    keyExtractor={(item) => item.restaurant.id}
+                />
+            </View>
+
+            <Text>Some Text</Text>
         </View>
-        /*
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React David's Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
-      </View>*/
-    );
+      );
   }
 }
 
